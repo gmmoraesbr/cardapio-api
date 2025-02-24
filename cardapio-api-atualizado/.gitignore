@@ -1,4 +1,2 @@
 .env
 config/config.go
-*.zip
-*.tar.gz
