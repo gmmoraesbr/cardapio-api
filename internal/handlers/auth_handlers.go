@@ -1,8 +1,8 @@
-package controllers
+package handlers
 
 import (
 	"cardapio-api/config"
-	"cardapio-api/models"
+	"cardapio-api/internal/models"
 	"net/http"
 	"time"
 
@@ -10,6 +10,7 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
+// Login gera um token JWT para o usuário autenticado
 func Login(c *gin.Context) {
 	var credenciais models.Usuario
 
@@ -23,12 +24,14 @@ func Login(c *gin.Context) {
 		return
 	}
 
+	// Criar token JWT
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
 		"usuario": credenciais.Usuario,
 		"exp":     time.Now().Add(time.Hour * 2).Unix(),
 	})
 
-	tokenString, err := token.SignedString(config.SecretKey)
+	// Assinar token com SecretKey
+	tokenString, err := token.SignedString(config.SecretKey) // ✅ Agora funciona
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"erro": "Erro ao gerar token"})
 		return
