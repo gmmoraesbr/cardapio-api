@@ -52,7 +52,7 @@ func (r *MongoCardapioRepository) BuscarPorID(id primitive.ObjectID) (*models.It
 	var item models.Item
 	err := r.collection.FindOne(context.TODO(), bson.M{"_id": id}).Decode(&item)
 	if err != nil {
-		return nil, errors.New("Item não encontrado")
+		return nil, errors.New("item não encontrado")
 	}
 	return &item, nil
 }
@@ -67,7 +67,7 @@ func (r *MongoCardapioRepository) Inserir(item models.Item) error {
 func (r *MongoCardapioRepository) Atualizar(id primitive.ObjectID, item models.Item) error {
 	result, err := r.collection.UpdateOne(context.TODO(), bson.M{"_id": id}, bson.M{"$set": item})
 	if err != nil || result.MatchedCount == 0 {
-		return errors.New("Erro ao atualizar item")
+		return errors.New("erro ao atualizar item")
 	}
 	return nil
 }
@@ -76,7 +76,7 @@ func (r *MongoCardapioRepository) Atualizar(id primitive.ObjectID, item models.I
 func (r *MongoCardapioRepository) Remover(id primitive.ObjectID) error {
 	result, err := r.collection.DeleteOne(context.TODO(), bson.M{"_id": id})
 	if err != nil || result.DeletedCount == 0 {
-		return errors.New("Erro ao remover item")
+		return errors.New("erro ao remover item")
 	}
 	return nil
 }
