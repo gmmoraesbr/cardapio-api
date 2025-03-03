@@ -16,11 +16,12 @@ func SetupRoutes(r *gin.Engine, cardapio_handler *handlers.CardapioHandler) {
 		public.POST("/login", handlers.Login)
 		public.GET("/cardapio", cardapio_handler.ListarCardapio)
 		public.GET("/cardapio/:id", cardapio_handler.ObterItemPorID)
+		public.POST("/refresh", middlewares.RefreshTokenHandler)
 	}
 
 	// Criar grupo de rotas privadas (com autenticação JWT)
 	private := r.Group("/")
-	private.Use(middlewares.AutenticarToken()) // Proteção JWT
+	private.Use(middlewares.AuthMiddleware()) // Proteção JWT
 	{
 		private.POST("/cardapio", cardapio_handler.AdicionarItem)
 		private.PUT("/cardapio/:id", cardapio_handler.AtualizarItem)

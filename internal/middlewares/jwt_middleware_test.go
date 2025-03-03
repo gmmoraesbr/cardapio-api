@@ -12,7 +12,7 @@ import (
 func TestAutenticarToken(t *testing.T) {
 	gin.SetMode(gin.TestMode)
 	r := gin.Default()
-	r.Use(middlewares.AutenticarToken())
+	r.Use(middlewares.AuthMiddleware())
 	r.GET("/protegido", func(c *gin.Context) { c.JSON(200, gin.H{"message": "OK"}) })
 
 	t.Run("Sem token retorna 401", func(t *testing.T) {
