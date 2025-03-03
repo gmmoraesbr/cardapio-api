@@ -3,7 +3,8 @@ package handlers
 import (
 	"cardapio-api/config"
 	"cardapio-api/internal/models"
-	"net/http"
+	"cardapio-api/pkg/logger"
+	"cardapio-api/pkg/response"
 	"time"
 
 	"github.com/dgrijalva/jwt-go"
@@ -14,13 +15,17 @@ import (
 func Login(c *gin.Context) {
 	var credenciais models.Usuario
 
+	// Tenta decodificar as credenciais do usuário
 	if err := c.ShouldBindJSON(&credenciais); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"erro": "Credenciais inválidas"})
+		logger.Error("Erro ao decodificar credenciais JSON: " + err.Error())
+		response.Error(c, "Credenciais inválidas", err)
 		return
 	}
 
+	// Validação do usuário e senha (hardcoded para exemplo)
 	if credenciais.Usuario != "admin" || credenciais.Senha != "1234" {
-		c.JSON(http.StatusUnauthorized, gin.H{"erro": "Usuário ou senha incorretos"})
+		logger.Error("Tentativa de login com credenciais inválidas: Usuário=" + credenciais.Usuario)
+		response.Error(c, "Usuário ou senha incorretos", nil)
 		return
 	}
 
@@ -31,11 +36,13 @@ func Login(c *gin.Context) {
 	})
 
 	// Assinar token com SecretKey
-	tokenString, err := token.SignedString(config.SecretKey) // ✅ Agora funciona
+	tokenString, err := token.SignedString(config.SecretKey)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"erro": "Erro ao gerar token"})
+		logger.Error("Erro ao gerar token JWT: " + err.Error())
+		response.Error(c, "Erro ao gerar token", err)
 		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{"token": tokenString})
+	logger.Info("Login bem-sucedido para usuário: " + credenciais.Usuario)
+	response.Success(c, "Login realizado com sucesso", gin.H{"token": tokenString})
 }
